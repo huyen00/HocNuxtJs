@@ -1,15 +1,15 @@
 <template>
-  <!-- <Tutorial /> -->
-  <div>
-    <LayoutHeader />
-    <addToCart />
-    <Cart />
-    <!-- <LayoutSideBar /> -->
-  </div>
+    <!-- <Tutorial /> -->
+    <div>
+        <LayoutHeader />
+        <addToCart />
+        <Cart />
+        <!-- <LayoutSideBar /> -->
+    </div>
 </template>
 
 <script>
 export default {
-  name: 'IndexPage',
-}
+    name: 'IndexPage'
+};
 </script>

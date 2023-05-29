@@ -1,4 +1,4 @@
-export default [
+export const products = [
     {
         name: "Apple",
         id: 1,

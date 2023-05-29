@@ -1,6 +1,9 @@
 
 export default {
   // Global page headers: https://go.nuxtjs.dev/config-head
+  server: {
+    port: 4500,
+},
   head: {
     title: 'hocNuxtJs',
     meta: [

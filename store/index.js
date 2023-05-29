@@ -1,100 +1,69 @@
-// import vuex from 'vuex'
-// const createStore = () => {
-//     return new vuex.Store({
-//         state: {
+import { productService } from '../service';
 
-//         },
-//         mutations: {
-
-//         },
-//         actions: {
-
-//         },
-//         getters: {
-
-//         },
-        
-//     })
-// }
-export const state = () => ({
+export const state = {
+    products: null,
     cart: [],
-    products: [
-        {
-            id:1,
-            name:'Product 1',
-            price: '$4',   
-        },
-        {
-            id:2,
-            name:'Product 2',
-            price: '$6',   
-        },
-        {
-            id:3,
-            name:'Product 3',
-            price: '$6',   
-        },
-        {
-            id:4,
-            name:'Product 4',
-            price: '$6',   
-        },
-        {
-            id:5,
-            name:'Product 5',
-            price: '$5',   
-        },
-        {
-            id:6,
-            name:'Product 6',
-            price: '$6',   
-        },
-        {
-            id:7,
-            name:'Product 7',
-            price: '$7',   
-        },
-    ]   
-  })
-  
-  export const getters = {
-    getCartItems(state) {
-        return state.cart
-      },
-  }
-  
-  export const mutations = {
-//    addToCart: (state, productId) => {
-//     const product = state.products.find((product) => product.id === productId);
-//     const cartProduct = state.cart.find((product) => product.id === productId );
-//     if (cartProduct){
-//         cartProduct.quantity ++;
-//     }
-//     else{
-//         state.cart.push({
-//             ...product,
-//             stock: product.quantity,
-//             quantity:1,
-//         })
-//     }
-//     product.quantity--;
-//    }
+};
 
-ADD_ITEM(state, product){
-        // state.cart.push(product);
-        // localStorage.setItem('cart', JSON.stringify(state.cart));
-        const inCart = state.cart.find ( p => p.id === product.id)
-        if(!inCart) {
-            state.cart.push(product)
-            localStorage.setItem('cart', JSON.stringify(state.cart))
-          }else {
-            console.log("Item already added")
-          }
+export const getters = {
+    cartSize: (state) => {
+        return state.cart.length;
     },
-  }
-  
-  export const actions = {
-    addToCart({ commit }, item) {
-        commit('ADD_ITEM', item)
-      },
-  }
+    cartTotalAmount: (state) => {
+        return state.cart.reduce((total, product) => {
+            return total + product.price * product.quantity;
+        }, 0);
+    },
+};
+
+export const mutations = {
+    setUpProducts: (state, productsPayload) => {
+        state.products = productsPayload;
+    },
+    addToCart: (state, productId) => {
+        const product = state.products.find((product) => product.id === productId);
+        const cartProduct = state.cart.find((product) => product.id === productId);
+
+        if (cartProduct) {
+            cartProduct.quantity++;
+        } else {
+            state.cart.push({
+                ...product,
+                stock: product.quantity,
+                quantity: 1,
+            });
+        }
+        product.quantity--;
+    },
+    removeFromCart: (state, productId) => {
+        const product = state.products.find((product) => product.id === productId);
+        const cartProduct = state.cart.find((product) => product.id === productId);
+        cartProduct.quantity--;
+        product.quantity++;
+    },
+    deleteFromCart: (state, productId) => {
+        const product = state.products.find((product) => product.id === productId);
+        const cartProductIndex = state.cart.findIndex((product) => product.id === productId);
+        product.quantity = state.cart[cartProductIndex].stock;
+        state.cart.splice(cartProductIndex, 1);
+    },
+};
+
+export const actions = {
+    fetchProducts: ({ commit }) => {
+        const products = productService.getProducts();
+        commit('setUpProducts', products);
+    },
+    addToCart: ({ commit }, productId) => {
+        const product = productService.products(productId);
+        commit('addToCart', product.id);
+    },
+    removeFromCart: ({ commit }, productId) => {
+        const product = productService.products(productId);
+        commit('removeFromCart', product.id);
+    },
+    deleteFromCart: ({ commit }, productId) => {
+        const product = productService.products(productId);
+        commit('deleteFromCart', product.id);
+    },
+};
